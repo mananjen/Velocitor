@@ -1,7 +1,6 @@
 import argparse
 
-from src.data import get_doc_texts, load_fiqa_dev
-from src.retrieval.bm25 import BM25Retriever
+from src.index.bm25 import build_fiqa_bm25_retriever
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -22,10 +21,7 @@ def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
-    corpus, _, _ = load_fiqa_dev()
-    doc_texts = get_doc_texts(corpus)
-
-    retriever = BM25Retriever(doc_texts)
+    retriever, doc_texts = build_fiqa_bm25_retriever()
     results = retriever.search(args.query, top_k=args.top_k)
 
     print(f"Query: {args.query}")
