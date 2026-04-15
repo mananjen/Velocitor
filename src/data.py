@@ -14,11 +14,7 @@ def load_fiqa_dev(data_dir: Path | str = DEFAULT_DATA_DIR) -> Tuple[Dict, Dict, 
 
 
 def build_passage_text(doc: Dict) -> str:
-    title = (doc.get("title") or "").strip()
-    text = (doc.get("text") or "").strip()
-    if title and text:
-        return f"{title}\n{text}"
-    return title or text
+    return (doc.get("text") or "").strip()
 
 
 def get_doc_texts(corpus: Dict) -> Dict[str, str]:

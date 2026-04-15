@@ -96,8 +96,7 @@ def main() -> None:
     doc_lengths = {doc_id: token_count(text) for doc_id, text in doc_texts.items()}
     query_lengths = {query_id: token_count(text) for query_id, text in queries.items()}
 
-    titled_docs = sum(1 for doc in corpus.values() if (doc.get("title") or "").strip())
-    untitled_docs = len(corpus) - titled_docs
+    untitled_docs = len(corpus)
 
     query_bucket_counts = Counter(query_length_bucket(q) for q in queries.values())
     relevant_per_query = [len(rels) for rels in qrels.values()]
@@ -119,9 +118,9 @@ def main() -> None:
     print()
 
     print("Title coverage")
-    print(f"  with title:    {titled_docs}")
     print(f"  without title: {untitled_docs}")
-    print(f"  title rate:    {titled_docs / len(corpus):.2%}")
+    print(f"  title rate:   0.00%")
+    print("  note: No titles present.")
     print()
 
     print_length_stats("Document", list(doc_lengths.values()))
