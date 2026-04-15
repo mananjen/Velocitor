@@ -1,0 +1,56 @@
+{
+  "configs": [
+    {
+      "name": "bm25",
+      "dataset": "fiqa-dev",
+      "query_count": 500,
+      "top_k": 10,
+      "mrr_rank_depth": 57638,
+      "latency_search_top_k": 10,
+      "metrics": {
+        "recall@10": 0.28291825396825404,
+        "mrr": 0.2977595785199573,
+        "latency_ms": {
+          "cold_count": 20,
+          "warm_count": 400,
+          "cold_p50": 0.85955,
+          "cold_p95": 1.4819450000000003,
+          "warm_p50": 0.81545,
+          "warm_p95": 1.9581449999999996
+        },
+        "peak_ram_mb": 263.02734375
+      },
+      "stratified": {
+        "recall@10_by_query_length": {
+          "short": 0.11538461538461539,
+          "medium": 0.2816091614478711,
+          "long": 0.3151266061980347
+        },
+        "recall@10_by_gold_doc_length": {
+          "long_gold": 0.27916559416559417,
+          "rest": 0.2851221970269589
+        }
+      },
+      "dataset_stats": {
+        "corpus_size": 57638,
+        "dev_queries": 500,
+        "dev_qrels": 500,
+        "top_10_percent_long_doc_count": 5764,
+        "long_doc_token_cutoff": 270
+      },
+      "machine": {
+        "platform": "Windows-10-10.0.26200-SP0",
+        "python_version": "3.11.15",
+        "cpu": "Intel64 Family 6 Model 191 Stepping 2, GenuineIntel",
+        "logical_cores": 24,
+        "physical_cores": 16,
+        "total_ram_gb": 15.745964050292969
+      },
+      "constraints": {
+        "cpu_only": true,
+        "warm_p95_le_50ms": true,
+        "serve_time_ram_le_2gb": true
+      }
+    }
+  ]
+}
