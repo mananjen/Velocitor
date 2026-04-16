@@ -1,4 +1,5 @@
 import argparse
+from html import parser
 import json
 import platform
 import time
@@ -252,13 +253,32 @@ def evaluate_dense(top_k: int = 10, max_queries: int | None = None) -> dict:
         max_queries=max_queries,
     )
 
-def evaluate_hybrid(top_k: int = 10, max_queries: int | None = None) -> dict:
-    return evaluate_with_builder(
-        name="hybrid-rrf",
-        builder=build_fiqa_hybrid_retriever,
+def evaluate_hybrid(
+    top_k: int = 10,
+    max_queries: int | None = None,
+    fetch_k: int = 100,
+    rrf_k: int = 60,
+    name: str | None = None,
+) -> dict:
+    config_name = name or f"hybrid-rrf-f{fetch_k}-k{rrf_k}"
+
+    builder = partial(
+        build_fiqa_hybrid_retriever,
+        fetch_k=fetch_k,
+        rrf_k=rrf_k,
+    )
+
+    result = evaluate_with_builder(
+        name=config_name,
+        builder=builder,
         top_k=top_k,
         max_queries=max_queries,
     )
+    result["hybrid_params"] = {
+        "fetch_k": fetch_k,
+        "rrf_k": rrf_k,
+    }
+    return result
 
 def write_json(data: dict, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -268,6 +288,8 @@ def write_json(data: dict, output_path: Path) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Evaluate retrievers on FiQA dev.")
     parser.add_argument("--top-k", type=int, default=10, help="Recall cutoff and serve-time search depth")
+    parser.add_argument("--hybrid-fetch-k", type=int, default=100, help="Hybrid candidate depth")
+    parser.add_argument("--hybrid-rrf-k", type=int, default=60, help="Hybrid RRF constant")
     parser.add_argument(
         "--max-queries",
         type=int,
@@ -280,6 +302,18 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("results") / "bench.json",
         help="Path to write evaluation JSON",
     )
+    parser.add_argument(
+        "--hybrid-ablation-fetch-k",
+        type=int,
+        default=None,
+        help="Optional ablation candidate depth for a second hybrid config",
+    )
+    parser.add_argument(
+        "--hybrid-ablation-rrf-k",
+        type=int,
+        default=None,
+        help="Optional ablation RRF constant for a second hybrid config",
+    )
     return parser
 
 
@@ -287,13 +321,41 @@ def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
-    report = {
-        "configs": [
-            evaluate_bm25(top_k=args.top_k, max_queries=args.max_queries),
-            evaluate_dense(top_k=args.top_k, max_queries=args.max_queries),
-            evaluate_hybrid(top_k=args.top_k, max_queries=args.max_queries),
-        ]
-    }
+    configs = [
+        evaluate_bm25(top_k=args.top_k, max_queries=args.max_queries),
+        evaluate_dense(top_k=args.top_k, max_queries=args.max_queries),
+        evaluate_hybrid(
+            top_k=args.top_k,
+            max_queries=args.max_queries,
+            fetch_k=args.hybrid_fetch_k,
+            rrf_k=args.hybrid_rrf_k,
+            name="hybrid-rrf",
+        ),
+    ]
+
+    if args.hybrid_ablation_fetch_k is not None or args.hybrid_ablation_rrf_k is not None:
+        ablation_fetch_k = (
+            args.hybrid_ablation_fetch_k
+            if args.hybrid_ablation_fetch_k is not None
+            else args.hybrid_fetch_k
+        )
+        ablation_rrf_k = (
+            args.hybrid_ablation_rrf_k
+            if args.hybrid_ablation_rrf_k is not None
+            else args.hybrid_rrf_k
+        )
+
+        configs.append(
+            evaluate_hybrid(
+                top_k=args.top_k,
+                max_queries=args.max_queries,
+                fetch_k=ablation_fetch_k,
+                rrf_k=ablation_rrf_k,
+                name="hybrid-rrf-ablation",
+            )
+        )
+
+    report = {"configs": configs}
 
     write_json(report, args.output)
 

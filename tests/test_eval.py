@@ -6,7 +6,8 @@ from src.eval import (
     recall_at_k,
     reciprocal_rank,
     evaluate_bm25, 
-    evaluate_dense
+    evaluate_dense,
+    build_parser
 )
 
 
@@ -56,3 +57,21 @@ def test_percentile_returns_interpolated_values() -> None:
 
     assert percentile(values, 50) == 30.0
     assert percentile(values, 95) == 48.0
+
+def test_eval_parser_accepts_hybrid_ablation_args() -> None:
+    parser = build_parser()
+
+    args = parser.parse_args(
+        [
+            "--top-k", "10",
+            "--hybrid-fetch-k", "100",
+            "--hybrid-rrf-k", "60",
+            "--hybrid-ablation-fetch-k", "200",
+            "--hybrid-ablation-rrf-k", "20",
+        ]
+    )
+
+    assert args.hybrid_fetch_k == 100
+    assert args.hybrid_rrf_k == 60
+    assert args.hybrid_ablation_fetch_k == 200
+    assert args.hybrid_ablation_rrf_k == 20

@@ -13,12 +13,12 @@
         "latency_ms": {
           "cold_count": 20,
           "warm_count": 400,
-          "cold_p50": 0.96575,
-          "cold_p95": 1.901290000000001,
-          "warm_p50": 0.81845,
-          "warm_p95": 2.0294149999999993
+          "cold_p50": 0.99075,
+          "cold_p95": 1.6837600000000001,
+          "warm_p50": 0.84135,
+          "warm_p95": 1.926479999999999
         },
-        "peak_ram_mb": 644.4296875
+        "peak_ram_mb": 647.14453125
       },
       "stratified": {
         "recall@10_by_query_length": {
@@ -65,12 +65,12 @@
         "latency_ms": {
           "cold_count": 20,
           "warm_count": 400,
-          "cold_p50": 12.4702,
-          "cold_p95": 20.526890000000073,
-          "warm_p50": 11.1619,
-          "warm_p95": 13.353755
+          "cold_p50": 13.43805,
+          "cold_p95": 27.057705000000066,
+          "warm_p50": 11.22185,
+          "warm_p95": 13.211594999999997
         },
-        "peak_ram_mb": 747.28125
+        "peak_ram_mb": 746.0390625
       },
       "stratified": {
         "recall@10_by_query_length": {
@@ -117,12 +117,12 @@
         "latency_ms": {
           "cold_count": 20,
           "warm_count": 400,
-          "cold_p50": 14.56265,
-          "cold_p95": 23.91328,
-          "warm_p50": 14.3997,
-          "warm_p95": 17.553499999999993
+          "cold_p50": 15.087900000000001,
+          "cold_p95": 18.105320000000006,
+          "warm_p50": 14.4558,
+          "warm_p95": 17.797219999999996
         },
-        "peak_ram_mb": 907.1875
+        "peak_ram_mb": 898.265625
       },
       "stratified": {
         "recall@10_by_query_length": {
@@ -154,6 +154,66 @@
         "cpu_only": true,
         "warm_p95_le_50ms": true,
         "serve_time_ram_le_2gb": true
+      },
+      "hybrid_params": {
+        "fetch_k": 100,
+        "rrf_k": 60
+      }
+    },
+    {
+      "name": "hybrid-rrf-ablation",
+      "dataset": "fiqa-dev",
+      "query_count": 500,
+      "top_k": 10,
+      "mrr_rank_depth": 57638,
+      "latency_search_top_k": 10,
+      "metrics": {
+        "recall@10": 0.4072228438228439,
+        "mrr": 0.4198511570570144,
+        "latency_ms": {
+          "cold_count": 20,
+          "warm_count": 400,
+          "cold_p50": 13.5826,
+          "cold_p95": 25.791690000000006,
+          "warm_p50": 14.6822,
+          "warm_p95": 21.55184
+        },
+        "peak_ram_mb": 958.8203125
+      },
+      "stratified": {
+        "recall@10_by_query_length": {
+          "short": 0.19230769230769232,
+          "medium": 0.4066217488053717,
+          "long": 0.4433673469387755
+        },
+        "recall@10_by_gold_doc_length": {
+          "long_gold": 0.39649245649245646,
+          "rest": 0.41352481733434104
+        }
+      },
+      "dataset_stats": {
+        "corpus_size": 57638,
+        "dev_queries": 500,
+        "dev_qrels": 500,
+        "top_10_percent_long_doc_count": 5764,
+        "long_doc_token_cutoff": 270
+      },
+      "machine": {
+        "platform": "Windows-10-10.0.26200-SP0",
+        "python_version": "3.11.15",
+        "cpu": "Intel64 Family 6 Model 191 Stepping 2, GenuineIntel",
+        "logical_cores": 24,
+        "physical_cores": 16,
+        "total_ram_gb": 15.745964050292969
+      },
+      "constraints": {
+        "cpu_only": true,
+        "warm_p95_le_50ms": true,
+        "serve_time_ram_le_2gb": true
+      },
+      "hybrid_params": {
+        "fetch_k": 200,
+        "rrf_k": 60
       }
     }
   ]
