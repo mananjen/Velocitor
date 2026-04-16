@@ -2,3 +2,5 @@ beir==2.2.0
 bm25s==0.3.3
 pytest==9.0.3
 psutil==7.2.2
+sentence-transformers==5.4.1
+faiss-cpu==1.13.2
