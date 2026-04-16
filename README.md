@@ -46,6 +46,6 @@ pytest -q
 
 ## Benchmark output
 Raw benchmark results are written to:
-```bash
+``
 results/bench.json
-```
+``
