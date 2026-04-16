@@ -5,6 +5,8 @@ from src.eval import (
     qrels_to_relevant_doc_ids,
     recall_at_k,
     reciprocal_rank,
+    evaluate_bm25, 
+    evaluate_dense
 )
 
 

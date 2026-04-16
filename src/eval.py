@@ -3,12 +3,13 @@ import json
 import platform
 import time
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence
+from typing import Callable, Dict, Iterable, List, Sequence
 
 import psutil
 
 from src.data import load_fiqa_dev
 from src.index.bm25 import build_fiqa_bm25_retriever
+from src.index.dense import build_fiqa_dense_retriever
 from src.utils import query_length_bucket, token_count, top_10_percent_count
 
 
@@ -138,9 +139,14 @@ def measure_latency_and_peak_ram(
     }
 
 
-def evaluate_bm25(top_k: int = 10, max_queries: int | None = None) -> dict:
+def evaluate_with_builder(
+    name: str,
+    builder: Callable[[], tuple[object, dict[str, str]]],
+    top_k: int = 10,
+    max_queries: int | None = None,
+) -> dict:
     corpus, queries, qrels = load_fiqa_dev()
-    retriever, doc_texts = build_fiqa_bm25_retriever()
+    retriever, doc_texts = builder()
 
     doc_lengths = {doc_id: token_count(text) for doc_id, text in doc_texts.items()}
     sorted_doc_lengths = sorted(doc_lengths.values(), reverse=True)
@@ -188,7 +194,7 @@ def evaluate_bm25(top_k: int = 10, max_queries: int | None = None) -> dict:
     peak_ram_mb = serving_stats["peak_ram_mb"]
 
     return {
-        "name": "bm25",
+        "name": name,
         "dataset": "fiqa-dev",
         "query_count": len(query_items),
         "top_k": top_k,
@@ -227,13 +233,31 @@ def evaluate_bm25(top_k: int = 10, max_queries: int | None = None) -> dict:
     }
 
 
+def evaluate_bm25(top_k: int = 10, max_queries: int | None = None) -> dict:
+    return evaluate_with_builder(
+        name="bm25",
+        builder=build_fiqa_bm25_retriever,
+        top_k=top_k,
+        max_queries=max_queries,
+    )
+
+
+def evaluate_dense(top_k: int = 10, max_queries: int | None = None) -> dict:
+    return evaluate_with_builder(
+        name="dense-minilm",
+        builder=build_fiqa_dense_retriever,
+        top_k=top_k,
+        max_queries=max_queries,
+    )
+
+
 def write_json(data: dict, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Evaluate BM25 on FiQA dev.")
+    parser = argparse.ArgumentParser(description="Evaluate retrievers on FiQA dev.")
     parser.add_argument("--top-k", type=int, default=10, help="Recall cutoff and serve-time search depth")
     parser.add_argument(
         "--max-queries",
@@ -254,12 +278,16 @@ def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
-    result = evaluate_bm25(top_k=args.top_k, max_queries=args.max_queries)
-    report = {"configs": [result]}
+    report = {
+        "configs": [
+            evaluate_bm25(top_k=args.top_k, max_queries=args.max_queries),
+            evaluate_dense(top_k=args.top_k, max_queries=args.max_queries),
+        ]
+    }
 
     write_json(report, args.output)
 
-    print(f"Wrote BM25 evaluation to: {args.output}")
+    print(f"Wrote evaluation to: {args.output}")
     print(json.dumps(report, indent=2))
 
 

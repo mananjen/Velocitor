@@ -1,12 +1,20 @@
 import argparse
 
 from src.index.bm25 import build_fiqa_bm25_retriever
+from src.index.dense import build_fiqa_dense_retriever
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Search FiQA passages.")
     parser.add_argument("--query", type=str, required=True, help="Query text")
     parser.add_argument("--top-k", type=int, default=10, help="Number of results to return")
+    parser.add_argument(
+        "--retriever",
+        type=str,
+        choices=["bm25", "dense"],
+        default="bm25",
+        help="Retriever to use",
+    )
     return parser
 
 
@@ -17,13 +25,22 @@ def snippet(text: str, max_chars: int = 300) -> str:
     return text[:max_chars] + "..."
 
 
+def build_retriever(name: str):
+    if name == "bm25":
+        return build_fiqa_bm25_retriever()
+    if name == "dense":
+        return build_fiqa_dense_retriever()
+    raise ValueError(f"Unsupported retriever: {name}")
+
+
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
-    retriever, doc_texts = build_fiqa_bm25_retriever()
+    retriever, doc_texts = build_retriever(args.retriever)
     results = retriever.search(args.query, top_k=args.top_k)
 
+    print(f"Retriever: {args.retriever}")
     print(f"Query: {args.query}")
     print("=" * 80)
 
