@@ -4,12 +4,14 @@ import platform
 import time
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Sequence
+from functools import partial
 
 import psutil
 
 from src.data import load_fiqa_dev
 from src.index.bm25 import build_fiqa_bm25_retriever
 from src.index.dense import build_fiqa_dense_retriever
+from src.index.hybrid import build_fiqa_hybrid_retriever
 from src.utils import query_length_bucket, token_count, top_10_percent_count
 
 
@@ -250,6 +252,13 @@ def evaluate_dense(top_k: int = 10, max_queries: int | None = None) -> dict:
         max_queries=max_queries,
     )
 
+def evaluate_hybrid(top_k: int = 10, max_queries: int | None = None) -> dict:
+    return evaluate_with_builder(
+        name="hybrid-rrf",
+        builder=build_fiqa_hybrid_retriever,
+        top_k=top_k,
+        max_queries=max_queries,
+    )
 
 def write_json(data: dict, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -282,6 +291,7 @@ def main() -> None:
         "configs": [
             evaluate_bm25(top_k=args.top_k, max_queries=args.max_queries),
             evaluate_dense(top_k=args.top_k, max_queries=args.max_queries),
+            evaluate_hybrid(top_k=args.top_k, max_queries=args.max_queries),
         ]
     }
 

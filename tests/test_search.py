@@ -28,3 +28,14 @@ def test_build_parser_accepts_retriever_choice() -> None:
     assert args.query == "what is short selling?"
     assert args.retriever == "dense"
     assert args.top_k == 5
+
+def test_build_parser_accepts_hybrid_retriever_choice() -> None:
+    parser = build_parser()
+
+    args = parser.parse_args(
+        ["--query", "what is short selling?", "--retriever", "hybrid", "--top-k", "5"]
+    )
+
+    assert args.query == "what is short selling?"
+    assert args.retriever == "hybrid"
+    assert args.top_k == 5

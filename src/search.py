@@ -2,6 +2,7 @@ import argparse
 
 from src.index.bm25 import build_fiqa_bm25_retriever
 from src.index.dense import build_fiqa_dense_retriever
+from src.index.hybrid import build_fiqa_hybrid_retriever
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -11,7 +12,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--retriever",
         type=str,
-        choices=["bm25", "dense"],
+        choices=["bm25", "dense", "hybrid"],
         default="bm25",
         help="Retriever to use",
     )
@@ -30,6 +31,8 @@ def build_retriever(name: str):
         return build_fiqa_bm25_retriever()
     if name == "dense":
         return build_fiqa_dense_retriever()
+    if name == "hybrid":
+        return build_fiqa_hybrid_retriever()
     raise ValueError(f"Unsupported retriever: {name}")
 
 
@@ -47,7 +50,7 @@ def main() -> None:
     for rank, (doc_id, score) in enumerate(results, start=1):
         print(f"Rank {rank}")
         print(f"doc_id: {doc_id}")
-        print(f"score: {score:.4f}")
+        print(f"score: {score:.6f}")
         print(f"passage: {snippet(doc_texts[doc_id])}")
         print("-" * 80)
 
