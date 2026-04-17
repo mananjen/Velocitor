@@ -41,7 +41,7 @@
       "machine": {
         "platform": "Windows-10-10.0.26200-SP0",
         "python_version": "3.11.15",
-        "cpu": "Intel64 Family 6 Model 191 Stepping 2, GenuineIntel",
+        "cpu": "13th Gen Intel(R) Core(TM) i7-13700HX (2.10 GHz)",
         "logical_cores": 24,
         "physical_cores": 16,
         "total_ram_gb": 15.745964050292969
@@ -93,7 +93,7 @@
       "machine": {
         "platform": "Windows-10-10.0.26200-SP0",
         "python_version": "3.11.15",
-        "cpu": "Intel64 Family 6 Model 191 Stepping 2, GenuineIntel",
+        "cpu": "13th Gen Intel(R) Core(TM) i7-13700HX (2.10 GHz)",
         "logical_cores": 24,
         "physical_cores": 16,
         "total_ram_gb": 15.745964050292969
@@ -145,7 +145,7 @@
       "machine": {
         "platform": "Windows-10-10.0.26200-SP0",
         "python_version": "3.11.15",
-        "cpu": "Intel64 Family 6 Model 191 Stepping 2, GenuineIntel",
+        "cpu": "13th Gen Intel(R) Core(TM) i7-13700HX (2.10 GHz)",
         "logical_cores": 24,
         "physical_cores": 16,
         "total_ram_gb": 15.745964050292969
@@ -201,7 +201,7 @@
       "machine": {
         "platform": "Windows-10-10.0.26200-SP0",
         "python_version": "3.11.15",
-        "cpu": "Intel64 Family 6 Model 191 Stepping 2, GenuineIntel",
+        "cpu": "13th Gen Intel(R) Core(TM) i7-13700HX (2.10 GHz)",
         "logical_cores": 24,
         "physical_cores": 16,
         "total_ram_gb": 15.745964050292969
