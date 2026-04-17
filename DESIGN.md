@@ -145,6 +145,12 @@ It also increased warm p95 latency and peak RAM.
 
 **Why I think it failed:** The extra candidates were mostly low-value tail results. The issue was not insufficient candidate depth; it was that the fusion policy was mixing in low-quality sparse evidence.
 
+### C. Broader Sweeps of different options
+
+I did not complete a broader dense-model sweep within the take-home time budget. I started with `all-MiniLM-L6-v2` because it was an allowed model and a plausible CPU-friendly operating point, then focused on end-to-end benchmarking and constraint validation.
+
+For hybrid retrieval, I used reciprocal rank fusion because it is a simple, standard, and easily explainable fusion method for combining sparse and dense rankings without introducing a learned combiner.
+
 ---
 
 ## 6. Trade-offs against the constraints
