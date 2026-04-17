@@ -1,5 +1,11 @@
 # DESIGN.md
 
+## Scope note
+
+Given the time-bounded nature of the take-home, I limited the dense model exploration to `all-MiniLM-L6-v2`, which was one of the explicitly allowed options and a strong fit for the CPU-only, low-latency constraint. I prioritized building a complete, reproducible evaluation harness and benchmarking BM25, dense, and hybrid retrieval under the required constraints before expanding the model sweep further.
+
+If I had more time, the next comparison I would run would be against the other allowed dense encoders to test whether the current operating point is still optimal under the same latency and memory budget.
+
 ## 1. Chosen operating point
 
 **Chosen configuration:** `dense-minilm` using `sentence-transformers/all-MiniLM-L6-v2` on CPU.
