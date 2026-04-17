@@ -139,7 +139,7 @@ docker run --rm \
 
 ## Important note on verification
 
-The Makefile is included to satisfy the reproducibility requirements of the take-home, but I was  **not fully able to end-to-end validate it locally before submission**. The Python entrypoints and benchmark outputs in the repo are the authoritative paths that were used for development. The Dockerfile runs the eval properly.
+The Makefile is included to satisfy the reproducibility requirements of the take-home, but I was  **not fully able to end-to-end validate it locally before submission**. The Python entrypoints and benchmark outputs in the repo are the authoritative paths that were used for development.
 
 ## Tests
 
