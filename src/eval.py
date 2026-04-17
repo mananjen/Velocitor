@@ -1,5 +1,4 @@
 import argparse
-from html import parser
 import json
 import platform
 import time
