@@ -1,4 +1,4 @@
-.PHONY: setup download-data inspect search eval test
+.PHONY: setup download-data inspect index search eval bench test
 
 setup:
 	pip install -r requirements.txt
@@ -14,6 +14,10 @@ search:
 
 eval:
 	python -m src.eval
+
+# benchmark file is created from the eval script itself
+# bench:
+# 	python -m src.eval
 
 test:
 	pytest -q

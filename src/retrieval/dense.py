@@ -35,17 +35,18 @@ class DenseRetriever:
         model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
         cache_root: Path | str = Path("artifacts") / "dense",
         force_rebuild: bool = False,
+        device: str = "cpu",
     ) -> None:
         self.doc_texts = doc_texts
         self.doc_ids = sorted(doc_texts.keys())
         self.corpus = [doc_texts[doc_id] for doc_id in self.doc_ids]
         self.model_name = model_name
+        self.device = device
 
-        self.model = SentenceTransformer(model_name)
+        self.model = SentenceTransformer(model_name, device=device)
 
         self.cache_dir = Path(cache_root) / safe_model_name(model_name)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-
         self.doc_ids_path = self.cache_dir / "doc_ids.json"
         self.embeddings_path = self.cache_dir / "doc_embeddings.npy"
         self.index_path = self.cache_dir / "index.faiss"
@@ -68,6 +69,7 @@ class DenseRetriever:
 
         return (
             cached_meta.get("model_name") == self.model_name
+            and cached_meta.get("device") == self.device
             and cached_meta.get("corpus_size") == len(self.doc_ids)
             and cached_meta.get("corpus_fingerprint") == self.corpus_fingerprint
             and cached_doc_ids == self.doc_ids
@@ -75,7 +77,6 @@ class DenseRetriever:
 
     def _load_index_from_cache(self):
         print(f"Loading dense cache from: {self.cache_dir}")
-
         if self.index_path.exists():
             return faiss.read_index(str(self.index_path))
 
@@ -95,7 +96,6 @@ class DenseRetriever:
             convert_to_numpy=True,
             normalize_embeddings=False,
         ).astype("float32")
-
         doc_embeddings = l2_normalize(doc_embeddings)
 
         np.save(self.embeddings_path, doc_embeddings)
@@ -104,6 +104,7 @@ class DenseRetriever:
             json.dumps(
                 {
                     "model_name": self.model_name,
+                    "device": self.device,
                     "corpus_size": len(self.doc_ids),
                     "embedding_dim": int(doc_embeddings.shape[1]),
                     "corpus_fingerprint": self.corpus_fingerprint,
@@ -132,7 +133,6 @@ class DenseRetriever:
             convert_to_numpy=True,
             normalize_embeddings=False,
         ).astype("float32")
-
         query_embedding = l2_normalize(query_embedding)
 
         scores, indices = self.index.search(query_embedding, top_k)
@@ -140,5 +140,4 @@ class DenseRetriever:
         ranked: List[Tuple[str, float]] = []
         for idx, score in zip(indices[0], scores[0]):
             ranked.append((self.doc_ids[int(idx)], float(score)))
-
         return ranked
